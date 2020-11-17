@@ -1,0 +1,7 @@
+bsdsetsid
+.ccls
+.ccls-cache
+.clang_complete
+git
+*.gz
+*.o
