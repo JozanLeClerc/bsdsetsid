@@ -3,14 +3,17 @@ str:
 	.asciz "a string\n"
 
 .text
-.extern u_write
 .globl _start
 
 _start:
+	jmp		c_main
+
+c_main:
 	movq	$0x1, %rdi
 	leaq	str, %rsi
 	movq	$0x9, %rdx
-	callq	u_write
-	movq	$0x1, %rax
+	movq	$0x4, %rax
+	syscall
 	xorq	%rdi, %rdi
+	movq	$0x1, %rax
 	syscall

@@ -23,16 +23,15 @@ PREFIX		:= /usr/local/
 DESTDIR		:=
 
 SRCS		:= ${SRCS_DIR}c_bsdsetsid.S
-SRCS		+= ${SRCS_DIR}u_write.S
 
 OBJS		 = ${SRCS:.S=.o}
 
-ASM			?= yasm
-ASMFLAGS	:= -felf64
-ASMFLAGS	+= -pgas
+AS			:= yasm
+ASFLAGS		:= -felf64
+ASFLAGS		+= -pgas
 
-LD			:= ld.lld
-LDFLAGS		:=
+LD			:= ld
+LDFLAGS		:= -melf_x86_64
 
 NAME		:= bsdsetsid
 
@@ -41,10 +40,10 @@ RM			:= rm -f
 .SUFFIXES: .S .o
 
 .S.o:
-	${ASM} ${ASMFLAGS} -o ${.TARGET} ${.IMPSRC}
+	${AS} ${ASFLAGS} -o ${.TARGET} ${.IMPSRC}
 
 ${NAME}: ${OBJS}
-	${LD} -o ${.TARGET} ${.ALLSRC}
+	${LD} ${LDFLAGS} -o ${.TARGET} ${.ALLSRC}
 
 all: ${NAME}
 
