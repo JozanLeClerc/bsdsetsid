@@ -23,6 +23,7 @@ PREFIX		:= /usr/local/
 DESTDIR		:=
 
 SRCS		:= ${SRCS_DIR}c_bsdsetsid.S
+SRCS		+= ${SRCS_DIR}u_strlen.S
 
 OBJS		 = ${SRCS:.S=.o}
 
