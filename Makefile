@@ -29,7 +29,6 @@ OBJS		 = ${SRCS:.S=.o}
 AS			 = yasm
 ASFLAGS		 = -felf64
 ASFLAGS		+= -pgas
-ASFLAGS		+= -gdwarf2
 
 CC			 = cc
 

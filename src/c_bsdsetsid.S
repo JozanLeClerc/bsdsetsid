@@ -3,7 +3,8 @@
 
 c_main:
 	movq	$0x1, %rdi
-	leaq	str, %rsi
+	xorq	%rcx, %rcx
+	movq	8(%rsp, %rcx, 8), %rsi
 	movq	$0xa, %rdx
 	movb	$0x4, %al
 	syscall
