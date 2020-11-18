@@ -26,12 +26,35 @@ SRCS		:= ${SRCS_DIR}c_bsdsetsid.S
 
 OBJS		 = ${SRCS:.S=.o}
 
-AS			:= yasm
-ASFLAGS		:= -felf64
+AS			 = yasm
+ASFLAGS		 = -felf64
 ASFLAGS		+= -pgas
+ASFLAGS		+= -gdwarf2
+
+CC			 = cc
 
 LD			:= ld
 LDFLAGS		:= -melf_x86_64
+LDFLAGS		+= --eh-frame-hdr
+LDFLAGS		+= -dynamic-linker
+LDFLAGS		+= /libexec/ld-elf.so.1
+LDFLAGS		+= --hash-style=both
+LDFLAGS		+= --enable-new-dtags 
+LDPOST		:= /usr/lib/crt1.o
+LDPOST		+= /usr/lib/crti.o
+LDPOST		+= /usr/lib/crtbegin.o
+LDPOST		+= -L/usr/lib
+LDPOST		+= -lgcc
+LDPOST		+= --as-needed
+LDPOST		+= -lgcc_s
+LDPOST		+= --no-as-needed
+LDPOST		+= -lc
+LDPOST		+= -lgcc
+LDPOST		+= --as-needed
+LDPOST		+= -lgcc_s
+LDPOST		+= --no-as-needed
+LDPOST		+= /usr/lib/crtend.o
+LDPOST		+= /usr/lib/crtn.o
 
 NAME		:= bsdsetsid
 
@@ -43,7 +66,8 @@ RM			:= rm -f
 	${AS} ${ASFLAGS} -o ${.TARGET} ${.IMPSRC}
 
 ${NAME}: ${OBJS}
-	${LD} ${LDFLAGS} -o ${.TARGET} ${.ALLSRC}
+	${LD} ${LDFLAGS} -o ${.TARGET} ${.ALLSRC} ${LDPOST}
+	# ${CC} -v -o ${.TARGET} ${.ALLSRC}
 
 all: ${NAME}
 

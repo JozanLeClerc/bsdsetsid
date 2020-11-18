@@ -1,19 +1,21 @@
-.data
-str:
-	.asciz "a string\n"
-
 .text
-.globl _start
-
-_start:
-	jmp		c_main
+.globl main
 
 c_main:
 	movq	$0x1, %rdi
 	leaq	str, %rsi
-	movq	$0x9, %rdx
-	movq	$0x4, %rax
+	movq	$0xa, %rdx
+	movb	$0x4, %al
 	syscall
+	retq
+
+main:
+	xorq	%rax, %rax
+	callq	c_main
+	xorq	%rax, %rax
 	xorq	%rdi, %rdi
-	movq	$0x1, %rax
+	movb	$0x1, %al
 	syscall
+
+.data
+	str: .asciz "a string\n"

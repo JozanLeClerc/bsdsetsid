@@ -1,5 +1,5 @@
 bsdsetsid
-.ccls
+.ccls*
 .ccls-cache
 .clang_complete
 git
