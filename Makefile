@@ -23,6 +23,7 @@ PREFIX		:= /usr/local/
 DESTDIR		:=
 
 SRCS		:= ${SRCS_DIR}c_bsdsetsid.S
+SRCS		+= ${SRCS_DIR}u_print.S
 SRCS		+= ${SRCS_DIR}u_strlen.S
 
 OBJS		 = ${SRCS:.S=.o}
@@ -75,3 +76,9 @@ clean:
 	${RM} ${OBJS} ${NAME}
 
 .PHONY: all clean
+
+
+# Files prefixes index
+# --------------------
+# c_  -> core program related
+# u_  -> utils related

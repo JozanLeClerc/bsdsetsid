@@ -1,28 +1,37 @@
 .text
-.extern u_strlen
-.globl main
+.extern	u_strlen
+.extern	u_pout
+.extern	u_perr
+.globl	main
 
 main:
 	xorq	%rcx, %rcx
-	movq	(%rsi, %rcx, 8), %rsi
-	movq	%rsi, %rdi
-	callq	u_strlen
-	movq	$0x1, %rdi
-	movq	%rax, %rdx
-	xorq	%rax, %rax
-	movb	$0x4, %al
-	syscall
-	movq	$0x1, %rdi
-	leaq	nl, %rsi
-	movq	$0x1, %rdx
-	xorq	%rax, %rax
-	movq	$0x4, %rax
-	syscall
-	xorq	%rax, %rax
-	xorq	%rax, %rax
+	callq	c_push
+	movq	(%rsi, %rcx, 8), %rdi
+	callq	u_pout
+	callq	c_pop
+	inc		%rcx
+	callq	c_push
+	movq	(%rsi, %rcx, 8), %rdi
+	callq	u_pout
+	callq	c_pop
 	xorq	%rdi, %rdi
-	movb	$0x1, %al
+	xorq	%rax, %rax
+	movb	$0x1, %al	# SYS_exit
 	syscall
 
+c_push:
+	movq	%rdx, %r8
+	movq	%rsi, %r9
+	movq	%rdi, %r10
+	retq
+
+c_pop:
+	movq	%r8, %rdi
+	movq	%r9, %rsi
+	movq	%r10, %rdx
+	retq
+
 .data
-	nl: .asciz "\n"
+nl: .asciz "\n"
+asd: .asciz "hey\n"
