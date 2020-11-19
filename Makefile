@@ -73,7 +73,7 @@ ${NAME}: ${OBJS}
 all: ${NAME}
 
 clean:
-	${RM} ${OBJS} ${NAME}
+	${RM} ${OBJS} ${NAME} vgcore*
 
 .PHONY: all clean
 
