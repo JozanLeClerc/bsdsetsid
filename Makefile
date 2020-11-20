@@ -29,12 +29,6 @@ SRCS		+= ${SRCS_DIR}u_strlen.S
 
 OBJS		 = ${SRCS:.S=.o}
 
-# AS			 = yasm
-# ASFLAGS		 = -felf64
-# ASFLAGS		+= -pgas
-
-CC			 = cc
-
 NAME		:= bsdsetsid
 
 RM			:= rm -f
@@ -42,7 +36,7 @@ RM			:= rm -f
 .SUFFIXES: .S .o
 
 .S.o:
-	${AS} ${ASFLAGS} -o ${.TARGET} ${.IMPSRC}
+	${AS} -o ${.TARGET} ${.IMPSRC}
 
 ${NAME}: ${OBJS}
 	${CC} -o ${.TARGET} ${.ALLSRC}

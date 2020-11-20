@@ -45,6 +45,9 @@
  * This is the entrypoint of the program.
  */
 
+.data
+status:	.space 4, 0x0
+
 .text
 .globl	main
 
@@ -53,42 +56,44 @@ main:
 	jle		e_noarg
 	xor		%rax, %rax
 	movb	$0x2, %al
+	push	%rdi
+	push	%rsi
+	push	%rdx
 	syscall
-	jc		e_fork
-	cmp		$0x0, %rax
-	je		c_child
+	test	%rax, %rax
+	js		e_fork
+	jz		c_child
 
 c_parent:
 	mov		%rax, %rdi
-#	xor		%r8, %r8
-#	lea		(%r8), %rsi
+	lea		status, %rsi
 	mov		$0x0, %rdx
 	mov		$0x0, %rcx
 	xor		%rax, %rax
 	movb	$0x7, %al	/* SYS_wait4 */
 	syscall
-
 	xor		%rdi, %rdi
-	movb	%al, %dil
+	lea		(%rsi), %rdi
 	movb	$0x7, %al
 	xor		%rax, %rax
 	movb	$0x1, %al	/* SYS_exit */
 	syscall
 
 c_child:
-#	xor		%rax, %rax
-#	movb	$0x93, %al	/* SYS_setsid */
-#	syscall
-#	jc		e_setsid
 	xor		%rax, %rax
-	push	%rsi
+	movb	$0x93, %al	/* SYS_setsid */
+	syscall
+	jc		e_setsid
+	xor		%rax, %rax
+	pop		%rdx
+	pop		%rsi
+	pop		%rdi
 	mov		$0x1, %rcx
 	mov		(%rsi, %rcx, 8), %rdi
 	lea		0(%rsi, %rcx, 8), %rsi
 	movb	$0x3b, %al	/* SYS_execve */
 	syscall
 	jc		e_execve
-	pop		%rsi
 	jmp		c_exit
 
 c_exit:
