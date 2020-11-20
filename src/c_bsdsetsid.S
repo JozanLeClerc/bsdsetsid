@@ -51,29 +51,6 @@ status:	.space 4, 0x0
 .text
 .globl	main
 
-c_hex_dec:
-    xor     %r10, %r10
-    xor     %r9, %r9
-    xor     %r8, %r8
-    mov     $0xa, %rbx
-    clc
-.repeat:
-    xor     %rdx, %rdx
-    idiv    %rbx
-    or      $0x0, %dl
-    mov     $0x8, %rcx
-.shift:
-    rcrb    $0x1, %dl
-    rcr     $0x1, %r10
-    rcr     $0x1, %r9
-    rcr     $0x1, %r8
-    dec     %rcx
-    and     %rcx, %rcx
-    jnz     .shift
-    and     %rax, %rax
-    jnz     .repeat
-	jmp		c_parent_next
-
 main:
 	cmpb	$0x1, %dil
 	jle		e_noarg
@@ -88,30 +65,14 @@ main:
 	jz		c_child
 
 c_parent:
-	mov		%rax, %rdi
-	lea		status, %rsi
-	xor		%rdx, %rdx
-	xor		%rcx, %rcx
-	xor		%rax, %rax
-	movb	$0x7, %al	/* SYS_wait4 */
-	syscall
-	movq	(%rsi), %rax
-	and		$0xff00, %rax
-	shr		$0x8, %rax
-	push	%rax
-	jmp		c_hex_dec
-c_parent_next:
-	pop		%rdi
-	movb	$0x7, %al
-	xor		%rax, %rax
-	movb	$0x1, %al	/* SYS_exit */
-	syscall
+	jmp		c_exit
 
 c_child:
-#	xor		%rax, %rax
-#	movb	$0x93, %al	/* SYS_setsid */
-#	syscall
-#	jc		e_setsid
+	xor		%rax, %rax
+	mov		$0x93, %rax	/* SYS_setsid */
+	syscall
+	test	%rax, %rax
+	js		e_setsid
 	xor		%rax, %rax
 	pop		%rdx
 	pop		%rsi
