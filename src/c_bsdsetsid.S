@@ -39,7 +39,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * bsdsetsid: src/c_bsdsetsid.S
- * 2020-11-20 18:18
+ * 2020-11-20 19:30
  * Joe
  *
  * This is the entrypoint of the program.
@@ -50,6 +50,29 @@ status:	.space 4, 0x0
 
 .text
 .globl	main
+
+c_hex_dec:
+    xor     %r10, %r10
+    xor     %r9, %r9
+    xor     %r8, %r8
+    mov     $0xa, %rbx
+    clc
+.repeat:
+    xor     %rdx, %rdx
+    idiv    %rbx
+    or      $0x0, %dl
+    mov     $0x8, %rcx
+.shift:
+    rcrb    $0x1, %dl
+    rcr     $0x1, %r10
+    rcr     $0x1, %r9
+    rcr     $0x1, %r8
+    dec     %rcx
+    and     %rcx, %rcx
+    jnz     .shift
+    and     %rax, %rax
+    jnz     .repeat
+	jmp		c_parent_next
 
 main:
 	cmpb	$0x1, %dil
@@ -67,23 +90,25 @@ main:
 c_parent:
 	mov		%rax, %rdi
 	lea		status, %rsi
-	mov		$0x0, %rdx
-	mov		$0x0, %rcx
+	xor		%rdx, %rdx
+	xor		%rcx, %rcx
 	xor		%rax, %rax
 	movb	$0x7, %al	/* SYS_wait4 */
 	syscall
-	xor		%rdi, %rdi
-	lea		(%rsi), %rdi
+	mov		%rsi, %rax
+	jmp		c_hex_dec
+c_parent_next:
+	mov		%r10, %rdi
 	movb	$0x7, %al
 	xor		%rax, %rax
 	movb	$0x1, %al	/* SYS_exit */
 	syscall
 
 c_child:
-	xor		%rax, %rax
-	movb	$0x93, %al	/* SYS_setsid */
-	syscall
-	jc		e_setsid
+#	xor		%rax, %rax
+#	movb	$0x93, %al	/* SYS_setsid */
+#	syscall
+#	jc		e_setsid
 	xor		%rax, %rax
 	pop		%rdx
 	pop		%rsi
@@ -94,7 +119,8 @@ c_child:
 	movb	$0x3b, %al	/* SYS_execve */
 	syscall
 	jc		e_execve
-	jmp		c_exit
+	test	%rax, %rax
+	js		e_execve
 
 c_exit:
 	xor		%rdi, %rdi

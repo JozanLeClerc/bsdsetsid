@@ -39,7 +39,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * bsdsetsid: src/e_err.S
- * 2020-11-20 16:43
+ * 2020-11-20 19:10
  * Joe
  *
  * General error handling happen here.
@@ -96,9 +96,7 @@ e_execve:
 	lea		nl, %rdi
 	call	u_perr
 	mov		$0x4, %rdi
-	xor		%rax, %rax
-	movb	$0x1, %al	/* SYS_exit */
-	syscall
+	jmp		e_exit
 
 e_exit:
 	xor		%rax, %rax

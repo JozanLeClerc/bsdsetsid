@@ -39,7 +39,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * bsdsetsid: src/u_strlen.S
- * 2020-11-19 14:10
+ * 2020-11-20 19:25
  * Joe
  *
  * Simple implementation of strlen.
@@ -50,14 +50,12 @@
 
 u_strlen:
 	mov		%rdi, %rcx
-
-u_loop:
+.u.loop:
 	cmpb	$0x0, (%rcx)
-	je		u_ret
+	je		.u.ret
 	inc		%rcx
-	jmp		u_loop
-
-u_ret:
+	jmp		.u.loop
+.u.ret:
 	sub		%rdi, %rcx
 	mov		%rcx, %rax
 	ret
