@@ -39,7 +39,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * bsdsetsid: src/c_bsdsetsid.S
- * 2020-11-20 19:30
+ * 2020-11-20 19:45
  * Joe
  *
  * This is the entrypoint of the program.
@@ -95,10 +95,13 @@ c_parent:
 	xor		%rax, %rax
 	movb	$0x7, %al	/* SYS_wait4 */
 	syscall
-	mov		%rsi, %rax
+	movq	(%rsi), %rax
+	and		$0xff00, %rax
+	shr		$0x8, %rax
+	push	%rax
 	jmp		c_hex_dec
 c_parent_next:
-	mov		%r10, %rdi
+	pop		%rdi
 	movb	$0x7, %al
 	xor		%rax, %rax
 	movb	$0x1, %al	/* SYS_exit */
@@ -119,8 +122,6 @@ c_child:
 	movb	$0x3b, %al	/* SYS_execve */
 	syscall
 	jc		e_execve
-	test	%rax, %rax
-	js		e_execve
 
 c_exit:
 	xor		%rdi, %rdi
