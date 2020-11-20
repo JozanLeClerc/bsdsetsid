@@ -7,39 +7,39 @@
 main:
 	cmpb	$0x1, %dil
 	jle		c_noarg
-	pushq	%rdi
-	pushq	%rsi
-	pushq	%rdx
-	xorq	%rcx, %rcx
-	movq	(%rsi, %rcx, 8), %rdi
-	movq	%rcx, %r8
-	callq	u_pout
-	movq	%r8, %rcx
-	popq	%rdx
-	popq	%rsi
-	popq	%rdi
-	pushq	%rdi
-	pushq	%rsi
-	pushq	%rdx
+	push	%rdi
+	push	%rsi
+	push	%rdx
+	xor		%rcx, %rcx
+	mov		(%rsi, %rcx, 8), %rdi
+	mov		%rcx, %r8
+	call	u_pout
+	mov		%r8, %rcx
+	pop		%rdx
+	pop		%rsi
+	pop		%rdi
+	push	%rdi
+	push	%rsi
+	push	%rdx
 	inc		%rcx
-	movq	(%rsi, %rcx, 8), %rdi
-	callq	u_pout
-	popq	%rdx
-	popq	%rsi
-	popq	%rdi
+	mov		(%rsi, %rcx, 8), %rdi
+	call	u_pout
+	pop		%rdx
+	pop		%rsi
+	pop		%rdi
 	jmp		c_exit
 
 c_noarg:
-	leaq	noarg_str, %rdi
-	callq	u_perr
-	movq	$0x1, %rdi
-	xorq	%rax, %rax
+	lea		noarg_str, %rdi
+	call	u_perr
+	mov		$0x1, %rdi
+	xor		%rax, %rax
 	movb	$0x1, %al	# SYS_exit
 	syscall
 
 c_exit:
-	xorq	%rdi, %rdi
-	xorq	%rax, %rax
+	xor		%rdi, %rdi
+	xor		%rax, %rax
 	movb	$0x1, %al	# SYS_exit
 	syscall
 

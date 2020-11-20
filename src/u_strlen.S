@@ -2,7 +2,7 @@
 .globl	u_strlen
 
 u_strlen:
-	movq	%rdi, %rcx
+	mov		%rdi, %rcx
 
 u_loop:
 	cmpb	$0x0, (%rcx)
@@ -12,5 +12,5 @@ u_loop:
 
 u_ret:
 	sub		%rdi, %rcx
-	movq	%rcx, %rax
-	retq
+	mov		%rcx, %rax
+	ret
