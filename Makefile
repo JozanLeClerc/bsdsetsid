@@ -28,9 +28,9 @@ SRCS		+= ${SRCS_DIR}u_strlen.S
 
 OBJS		 = ${SRCS:.S=.o}
 
-AS			 = yasm
-ASFLAGS		 = -felf64
-ASFLAGS		+= -pgas
+AS			 = as
+# ASFLAGS		 = -felf64
+# ASFLAGS		+= -pgas
 
 CC			 = cc
 
