@@ -38,12 +38,13 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
- * bsdsetsid: src/c_bsdsetsid.S
+ * bsdsetsid: src/u_strlen.S
  * 2020-11-19 14:10
  * Joe
  *
  * Simple implementation of strlen.
  */
+
 .text
 .globl	u_strlen
 

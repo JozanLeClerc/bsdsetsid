@@ -38,30 +38,76 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
- * bsdsetsid: src/u_print.S
- * 2020-11-19 13:27
+ * bsdsetsid: src/e_err.S
+ * 2020-11-20 16:43
  * Joe
  *
- * Util functions to print to standard out or standard error.
+ * General error handling happen here.
  */
 
 .text
-.globl	u_pout
-.globl	u_perr
+.extern	strerror
+.globl	e_execve
+.globl	e_fork
+.globl	e_noarg
+.globl	e_setsid
 
-u_pout:
-	mov		$0x1, %r11	/* stdout */
-	jmp		u_print
+e_noarg:
+	lea		e_noarg_str, %rdi
+	call	u_perr
+	mov		$0x1, %rdi
+	jmp		e_exit
 
-u_perr:
-	mov		$0x2, %r11	/* stderr */
-	jmp		u_print
+e_fork:
+	push	%rax
+	lea		e_fork_str, %rdi
+	call	u_perr
+	pop		%rax
+	mov		%rax, %rdi
+	call	strerror
+	mov		%rax, %rdi
+	call	u_perr
+	mov		$0x2, %rdi
+	jmp		e_exit
 
-u_print:
-	call	u_strlen
-	mov		%rax, %rdx
-	mov		%rdi, %rsi
-	mov		%r11, %rdi
-	mov		$0x4, %rax	/* SYS_write */
+e_setsid:
+	push	%rax
+	lea		e_setsid_str, %rdi
+	call	u_perr
+	pop		%rax
+	mov		%rax, %rdi
+	call	strerror
+	mov		%rax, %rdi
+	call	u_perr
+	lea		nl, %rdi
+	call	u_perr
+	mov		$0x3, %rdi
+	jmp		e_exit
+
+e_execve:
+	push	%rax
+	lea		e_execve_str, %rdi
+	call	u_perr
+	pop		%rax
+	mov		%rax, %rdi
+	call	strerror
+	mov		%rax, %rdi
+	call	u_perr
+	lea		nl, %rdi
+	call	u_perr
+	mov		$0x4, %rdi
+	xor		%rax, %rax
+	movb	$0x1, %al	/* SYS_exit */
 	syscall
-	ret
+
+e_exit:
+	xor		%rax, %rax
+	movb	$0x1, %al	/* sys_exit */
+	syscall
+
+.data
+nl:				.asciz "\n"
+e_setsid_str:	.asciz "bsdsetsid: setsid: "
+e_execve_str:	.asciz "bsdsetsid: execve: "
+e_fork_str:		.asciz "bsdsetsid: fork: "
+e_noarg_str:	.asciz "bsdsetsid: no command specified\n"

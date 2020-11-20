@@ -39,32 +39,47 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * bsdsetsid: src/c_bsdsetsid.S
- * 2020-11-18 12:37
+ * 2020-11-20 18:18
  * Joe
  *
  * This is the entrypoint of the program.
  */
 
 .text
-.extern	u_strlen
-.extern	u_pout
-.extern	u_perr
 .globl	main
 
 main:
 	cmpb	$0x1, %dil
-	jle		c_noarg
+	jle		e_noarg
 	xor		%rax, %rax
-	movb	$0x2, %al	/* SYS_fork */
+	movb	$0x2, %al
 	syscall
-	jc		c_fork_fail
+	jc		e_fork
 	cmp		$0x0, %rax
 	je		c_child
 
-c_child:
+c_parent:
+	mov		%rax, %rdi
+#	xor		%r8, %r8
+#	lea		(%r8), %rsi
+	mov		$0x0, %rdx
+	mov		$0x0, %rcx
 	xor		%rax, %rax
-	movb	$0x93, %al	/* SYS_setsid */
+	movb	$0x7, %al	/* SYS_wait4 */
 	syscall
+
+	xor		%rdi, %rdi
+	movb	%al, %dil
+	movb	$0x7, %al
+	xor		%rax, %rax
+	movb	$0x1, %al	/* SYS_exit */
+	syscall
+
+c_child:
+#	xor		%rax, %rax
+#	movb	$0x93, %al	/* SYS_setsid */
+#	syscall
+#	jc		e_setsid
 	xor		%rax, %rax
 	push	%rsi
 	mov		$0x1, %rcx
@@ -72,31 +87,12 @@ c_child:
 	lea		0(%rsi, %rcx, 8), %rsi
 	movb	$0x3b, %al	/* SYS_execve */
 	syscall
+	jc		e_execve
 	pop		%rsi
 	jmp		c_exit
-
-c_fork_fail:
-	lea		forkfail_str, %rdi
-	call	u_perr
-	mov		$0x2, %rdi
-	xor		%rax, %rax
-	movb	$0x1, %al	/* SYS_exit */
-	syscall
-
-c_noarg:
-	lea		noarg_str, %rdi
-	call	u_perr
-	mov		$0x1, %rdi
-	xor		%rax, %rax
-	movb	$0x1, %al	/* SYS_exit */
-	syscall
 
 c_exit:
 	xor		%rdi, %rdi
 	xor		%rax, %rax
 	movb	$0x1, %al	/* SYS_exit */
 	syscall
-
-.data
-noarg_str:		.asciz "bsdsetsid: no command specified"
-forkfail_str:	.asciz "bsdsetsid: fork failed"

@@ -23,12 +23,13 @@ PREFIX		:= /usr/local/
 DESTDIR		:=
 
 SRCS		:= ${SRCS_DIR}c_bsdsetsid.S
+SRCS		+= ${SRCS_DIR}e_err.S
 SRCS		+= ${SRCS_DIR}u_print.S
 SRCS		+= ${SRCS_DIR}u_strlen.S
 
 OBJS		 = ${SRCS:.S=.o}
 
-AS			 = as
+# AS			 = yasm
 # ASFLAGS		 = -felf64
 # ASFLAGS		+= -pgas
 
