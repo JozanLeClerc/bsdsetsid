@@ -49,8 +49,33 @@
 .globl	u_strncmp
 
 u_strncmp:
-#	xor		%rcx, %rcx
-#	dec		%rdx
-#.u.loop
-#	cmpb	(%rsi)
+	xor		%rcx, %rcx
+	dec		%rdx
+.u.loop:
+	xor		%r8, %r8
+	xor		%r9, %r9
+	movb	(%rdi, %rcx), %r8b
+	movb	(%rsi, %rcx), %r9b
+	cmpb	%r8b, %r9b
+	jne		.u.retdiff
+	cmp		%rdx, %rcx
+	jge		.u.retdiff
+	cmpb	$0x0, (%rdi, %rcx)
+	jne		.u.inc
+	cmpb	$0x0, (%rsi, %rcx)
+	je		.u.retzer
+.u.inc:
+	inc		%rcx
+	jmp		.u.loop
+.u.retdiff:
+	xor		%r8, %r8
+	xor		%r9, %r9
+	movb	(%rdi, %rcx), %r8b
+	movb	(%rsi, %rcx), %r9b
+	sub		%r9, %r8
+	xor		%rax, %rax
+	movl	%r8d, %eax
+	ret
+.u.retzer:
+	xor		%rax, %rax
 	ret

@@ -49,24 +49,24 @@
 .globl	u_hexdec
 
 u_hexdec:
-    xor     %r10, %r10
-    xor     %r9, %r9
-    xor     %r8, %r8
-    mov     $0xa, %rbx
-    clc
+	xor		%r10, %r10
+	xor		%r9, %r9
+	xor		%r8, %r8
+	mov		$0xa, %rbx
+	clc
 .u.repeat:
-    xor     %rdx, %rdx
-    idiv    %rbx
-    or      $0x0, %dl
-    mov     $0x8, %rcx
+	xor		%rdx, %rdx
+	idiv	%rbx
+	or		$0x0, %dl
+	mov		$0x8, %rcx
 .u.shift:
-    rcrb    $0x1, %dl
-    rcr     $0x1, %r10
-    rcr     $0x1, %r9
-    rcr     $0x1, %r8
-    dec     %rcx
-    and     %rcx, %rcx
-    jnz     .u.shift
-    and     %rax, %rax
-    jnz     .u.repeat
+	rcrb	$0x1, %dl
+	rcr		$0x1, %r10
+	rcr		$0x1, %r9
+	rcr		$0x1, %r8
+	dec		%rcx
+	and		%rcx, %rcx
+	jnz		.u.shift
+	and		%rax, %rax
+	jnz		.u.repeat
 	ret
