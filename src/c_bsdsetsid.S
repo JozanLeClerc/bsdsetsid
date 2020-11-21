@@ -39,26 +39,63 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * bsdsetsid: src/c_bsdsetsid.S
- * 2020-11-20 19:45
+ * 2020-11-21 18:47
  * Joe
  *
  * This is the entrypoint of the program.
  */
 
 .data
-status:	.space 4, 0x0
+status:		.space 4, 0x0
+ref_w_opt:	.asciz "-w"
 
 .text
 .globl	main
 
+c_parent_old:
+	mov		%rax, %rdi
+	lea		status, %rsi
+	xor		%rdx, %rdx
+	xor		%rcx, %rcx
+	xor		%rax, %rax
+	movb	$0x7, %al	/* SYS_wait4 */
+	syscall
+	movq	(%rsi), %rax
+	and		$0xff00, %rax
+	shr		$0x8, %rax
+	push	%rax
+	jmp		u_hexdec
+c_parent_next:
+	pop		%rdi
+	movb	$0x7, %al
+	xor		%rax, %rax
+	movb	$0x1, %al	/* SYS_exit */
+	syscall
+
+c_w_opt:
+	mov		$0x1, %r15
+	pop		%rdi
+	mov		%rdi, %r8
+	push	%rdi
+	cmp		$0x2, %r8
+	jle		e_noarg
+	jmp		.c.main_next
+
 main:
 	cmpb	$0x1, %dil
 	jle		e_noarg
-	xor		%rax, %rax
-	movb	$0x2, %al
-	push	%rdi
-	push	%rsi
+	xor		%r15, %r15
 	push	%rdx
+	push	%rsi
+	push	%rdi
+	lea		ref_w_opt, %rdi
+	mov		$0x3, %rdx
+	call	u_strncmp
+	cmp		$0x0, %rax
+	je		c_w_opt
+.c.main_next:
+	xor		%rax, %rax
+	movb	$0x2, %al	/* SYS_fork */
 	syscall
 	test	%rax, %rax
 	js		e_fork
@@ -74,9 +111,9 @@ c_child:
 	test	%rax, %rax
 	js		e_setsid
 	xor		%rax, %rax
-	pop		%rdx
-	pop		%rsi
 	pop		%rdi
+	pop		%rsi
+	pop		%rdx
 	mov		$0x1, %rcx
 	mov		(%rsi, %rcx, 8), %rdi
 	lea		0(%rsi, %rcx, 8), %rsi

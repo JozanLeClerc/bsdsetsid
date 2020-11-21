@@ -39,7 +39,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * bsdsetsid: src/u_strncmp.S
- * 2020-11-21 14:02
+ * 2020-11-21 18:47
  * Joe
  *
  * General error handling happen here.

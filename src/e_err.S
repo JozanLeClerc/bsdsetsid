@@ -100,7 +100,7 @@ e_execve:
 
 e_exit:
 	xor		%rax, %rax
-	movb	$0x1, %al	/* sys_exit */
+	movb	$0x1, %al	/* SYS_exit */
 	syscall
 
 .data
