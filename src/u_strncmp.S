@@ -38,54 +38,19 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
- * bsdsetsid: src/c_bsdsetsid.S
- * 2020-11-20 19:45
+ * bsdsetsid: src/u_strncmp.S
+ * 2020-11-21 14:02
  * Joe
  *
- * This is the entrypoint of the program.
+ * General error handling happen here.
  */
 
-.data
-status:	.space 4, 0x0
-
 .text
-.globl	main
+.globl	u_strncmp
 
-main:
-	cmpb	$0x1, %dil
-	jle		e_noarg
-	xor		%rax, %rax
-	movb	$0x2, %al
-	push	%rdi
-	push	%rsi
-	push	%rdx
-	syscall
-	test	%rax, %rax
-	js		e_fork
-	jz		c_child
-
-c_parent:
-	jmp		c_exit
-
-c_child:
-	xor		%rax, %rax
-	movb	$0x93, %al	/* SYS_setsid */
-	syscall
-	test	%rax, %rax
-	js		e_setsid
-	xor		%rax, %rax
-	pop		%rdx
-	pop		%rsi
-	pop		%rdi
-	mov		$0x1, %rcx
-	mov		(%rsi, %rcx, 8), %rdi
-	lea		0(%rsi, %rcx, 8), %rsi
-	movb	$0x3b, %al	/* SYS_execve */
-	syscall
-	jc		e_execve
-
-c_exit:
-	xor		%rdi, %rdi
-	xor		%rax, %rax
-	movb	$0x1, %al	/* SYS_exit */
-	syscall
+u_strncmp:
+#	xor		%rcx, %rcx
+#	dec		%rdx
+#.u.loop
+#	cmpb	(%rsi)
+	ret

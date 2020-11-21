@@ -11,7 +11,7 @@
 # ========================
 #
 # bsdsetsid: Makefile
-# 2020-11-13 13:22
+# 2020-11-21 14:36
 # Joe
 #
 # BSD Makefile
@@ -19,32 +19,44 @@
 default: all
 
 SRCS_DIR	:= src/
-PREFIX		:= /usr/local/
+OBJS_DIR	:= obj/
+PREFIX		?= /usr/local/
 DESTDIR		:=
+MAKEOBJDIR	:= ./
 
-SRCS		:= ${SRCS_DIR}c_bsdsetsid.S
-SRCS		+= ${SRCS_DIR}e_err.S
-SRCS		+= ${SRCS_DIR}u_print.S
-SRCS		+= ${SRCS_DIR}u_strlen.S
+SRCS		 = c_bsdsetsid
+SRCS		+= e_err
+SRCS		+= u_hexdec
+SRCS		+= u_print
+SRCS		+= u_strlen
+SRCS		+= u_strncmp
+SRCS		:= ${SRCS:S/$/.S/g}
+SRCS		:= ${SRCS:S/^/${SRCS_DIR}/g}
 
-OBJS		 = ${SRCS:.S=.o}
+OBJS		:= ${SRCS:=.o}
 
 NAME		:= bsdsetsid
 
 RM			:= rm -f
+RMDIR		:= rmdir -p
+MKDIR		:= mkdir -p
 
-.SUFFIXES: .S .o
+.OBJDIR: ./
+.SUFFIXES: .S.o .o
+.S.S.o:
+	${AS} -o ${.TARGET:S/src/obj/} ${.IMPSRC}
 
-.S.o:
-	${AS} -o ${.TARGET} ${.IMPSRC}
+${OBJS_DIR}:
+	${MKDIR} ${OBJS_DIR}
 
 ${NAME}: ${OBJS}
-	${CC} -o ${.TARGET} ${.ALLSRC}
+	${CC} -o ${.TARGET} ${.ALLSRC:S/src/obj/}
 
-all: ${NAME}
+all: ${OBJS_DIR} ${NAME}
 
 clean:
-	${RM} ${OBJS} ${NAME} vgcore*
+	${RM} ${OBJS:S/src/obj/} ${NAME} vgcore*
+	${RM} -R obj
 
 .PHONY: all clean
 

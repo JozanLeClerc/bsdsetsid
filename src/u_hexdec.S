@@ -38,54 +38,35 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
- * bsdsetsid: src/c_bsdsetsid.S
- * 2020-11-20 19:45
+ * bsdsetsid: src/u_hexdec.S
+ * 2020-11-21 14:00
  * Joe
  *
- * This is the entrypoint of the program.
+ * General error handling happen here.
  */
 
-.data
-status:	.space 4, 0x0
-
 .text
-.globl	main
+.globl	u_hexdec
 
-main:
-	cmpb	$0x1, %dil
-	jle		e_noarg
-	xor		%rax, %rax
-	movb	$0x2, %al
-	push	%rdi
-	push	%rsi
-	push	%rdx
-	syscall
-	test	%rax, %rax
-	js		e_fork
-	jz		c_child
-
-c_parent:
-	jmp		c_exit
-
-c_child:
-	xor		%rax, %rax
-	movb	$0x93, %al	/* SYS_setsid */
-	syscall
-	test	%rax, %rax
-	js		e_setsid
-	xor		%rax, %rax
-	pop		%rdx
-	pop		%rsi
-	pop		%rdi
-	mov		$0x1, %rcx
-	mov		(%rsi, %rcx, 8), %rdi
-	lea		0(%rsi, %rcx, 8), %rsi
-	movb	$0x3b, %al	/* SYS_execve */
-	syscall
-	jc		e_execve
-
-c_exit:
-	xor		%rdi, %rdi
-	xor		%rax, %rax
-	movb	$0x1, %al	/* SYS_exit */
-	syscall
+u_hexdec:
+    xor     %r10, %r10
+    xor     %r9, %r9
+    xor     %r8, %r8
+    mov     $0xa, %rbx
+    clc
+.u.repeat:
+    xor     %rdx, %rdx
+    idiv    %rbx
+    or      $0x0, %dl
+    mov     $0x8, %rcx
+.u.shift:
+    rcrb    $0x1, %dl
+    rcr     $0x1, %r10
+    rcr     $0x1, %r9
+    rcr     $0x1, %r8
+    dec     %rcx
+    and     %rcx, %rcx
+    jnz     .u.shift
+    and     %rax, %rax
+    jnz     .u.repeat
+	ret
