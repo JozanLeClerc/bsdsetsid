@@ -39,11 +39,18 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * bsdsetsid: src/e_err.S
- * 2020-11-20 19:10
+ * 2020-11-22 17:09
  * Joe
  *
  * General error handling happen here.
  */
+
+.data
+nl:				.asciz "\n"
+e_setsid_str:	.asciz "bsdsetsid: setsid: "
+e_execve_str:	.asciz "bsdsetsid: execve: "
+e_fork_str:		.asciz "bsdsetsid: fork: "
+e_noarg_str:	.asciz "bsdsetsid: no command specified\n"
 
 .text
 .extern	strerror
@@ -102,10 +109,3 @@ e_exit:
 	xor		%rax, %rax
 	movb	$0x1, %al	/* SYS_exit */
 	syscall
-
-.data
-nl:				.asciz "\n"
-e_setsid_str:	.asciz "bsdsetsid: setsid: "
-e_execve_str:	.asciz "bsdsetsid: execve: "
-e_fork_str:		.asciz "bsdsetsid: fork: "
-e_noarg_str:	.asciz "bsdsetsid: no command specified\n"
