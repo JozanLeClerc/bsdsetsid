@@ -102,7 +102,8 @@ main:
 	jz		c_child
 
 c_parent:
-	jmp		c_exit
+#	jmp		c_exit
+	jmp		c_parent_old
 
 c_child:
 	xor		%rax, %rax
@@ -117,9 +118,11 @@ c_child:
 	mov		$0x1, %rcx
 	mov		(%rsi, %rcx, 8), %rdi
 	lea		0(%rsi, %rcx, 8), %rsi
-	movb	$0x3b, %al	/* SYS_execve */
-	syscall
-	jc		e_execve
+#	movb	$0x3b, %al	/* SYS_execve */
+#	syscall
+	callq	execve
+	test	%rax, %rax
+	js		e_execve
 
 c_exit:
 	xor		%rdi, %rdi
