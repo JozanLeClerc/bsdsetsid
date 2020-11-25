@@ -11,7 +11,7 @@
 # ========================
 #
 # bsdsetsid: Makefile
-# 2020-11-21 18:33
+# Wed Nov 25 22:16:00 CET 2020
 # Joe
 #
 # BSD Makefile
@@ -25,32 +25,33 @@ DESTDIR		:=
 MAKEOBJDIR	:= ./
 
 SRCS		 = c_bsdsetsid
-SRCS		+= e_err
-SRCS		+= u_hexdec
-SRCS		+= u_print
-SRCS		+= u_strlen
-SRCS		+= u_strncmp
-SRCS		:= ${SRCS:S/$/.S/g}
+SRCS		:= ${SRCS:S/$/.c/g}
 SRCS		:= ${SRCS:S/^/${SRCS_DIR}/g}
 
 OBJS		:= ${SRCS:=.o}
 
 NAME		:= bsdsetsid
 
+CFLAGS		+= -std=c89
+CFLAGS		+= -Wall
+CFLAGS		+= -Wextra
+CFLAGS		+= -Werror
+CFLAGS		+= -pedantic
+
 RM			:= rm -f
 RMDIR		:= rmdir -p
 MKDIR		:= mkdir -p
 
 .OBJDIR: ./
-.SUFFIXES: .S.o .o
-.S.S.o:
-	${AS} -o ${.TARGET:S/src/obj/} ${.IMPSRC}
+.SUFFIXES: .c.o .c
+.c.c.o:
+	${CC} -c ${CFLAGS} -o ${.TARGET:S/src/obj/} ${.IMPSRC}
 
 ${OBJS_DIR}:
 	${MKDIR} ${OBJS_DIR}
 
 ${NAME}: ${OBJS}
-	${CC} -o ${.TARGET} ${.ALLSRC:S/src/obj/}
+	${CC} ${CFLAGS} -o ${.TARGET} ${.ALLSRC:S/src/obj/}
 
 all: ${OBJS_DIR} ${NAME}
 
@@ -64,4 +65,3 @@ clean:
 # Files prefixes index
 # --------------------
 # c_  -> core program related
-# u_  -> utils related
