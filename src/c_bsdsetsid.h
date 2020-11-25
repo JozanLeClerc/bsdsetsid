@@ -38,106 +38,24 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
- * bsdsetsid: src/c_bsdsetsid.c
- * Wed Nov 25 22:31:26 CET 2020
+ * bsdsetsid: src/c_bsdsetsid.h
+Wed Nov 25 22:46:14 CET 2020
  * Joe
  *
  * This is the entrypoint of the program.
  */
+#ifndef __C_BSDSETSID_H__
+#define __C_BSDSETSID_H__
 
-#include <errno.h>
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
-#include <unistd.h>
+typedef char bool_t;
 
-#include "c_bsdsetsid.h"
+enum bool_e {
+	FALSE,
+	TRUE
+};
 
-static char
-c_args
-(int			argc,
- const char*	argv[],
- const char*	envp[],
- bool_t*		wopt)
-{
-	(void)envp;
-	if (argc == 1) {
-		dprintf(
-			STDERR_FILENO,
-			"%s: %s\n",
-			C_PROGNAME,
-			C_ERR_NOARG
-			);
-		return (1);
-	}
-	if (strncmp(argv[1], C_W_OPT, 3) == 0) {
-		*wopt = TRUE;
-		if (argc == 2) {
-			dprintf(
-				STDERR_FILENO,
-				"%s: %s\n",
-				C_PROGNAME,
-				C_ERR_NOARG
-				);
-			return (1);
-		}
-	}
-	return (0);
-}
+#define C_PROGNAME "bsdsetsid"
+#define C_ERR_NOARG "no program specified"
+#define C_W_OPT "-w"
 
-int
-main
-(int			argc,
- const char*	argv[],
- const char*	envp[])
-{
-	int sets_ret;
-	int exec_ret;
-	pid_t pid;
-	bool_t wopt;
-
-	wopt = FALSE;
-	if (c_args(argc, argv, envp, &wopt) != 0) {
-		return (EXIT_FAILURE);
-	}
-	pid = fork();
-	if (pid == -1) {
-		dprintf(
-			STDERR_FILENO,
-			"%s: fork: %s\n",
-			C_PROGNAME,
-			strerror(errno)
-			);
-		return (EXIT_FAILURE);
-	}
-	else if (pid == 0) {
-		sets_ret = setsid();
-		if (sets_ret == -1) {
-			dprintf(
-				STDERR_FILENO,
-				"%s: setsid: %s\n",
-				C_PROGNAME,
-				strerror(errno)
-				);
-			return (EXIT_FAILURE);
-		}
-		exec_ret = execve(
-			argv[1 + wopt],
-			(char* const*)argv + (1 + wopt),
-			(char* const*)envp
-			);
-		if (exec_ret == -1) {
-			dprintf(
-				STDERR_FILENO,
-				"%s: execve: %s\n",
-				C_PROGNAME,
-				strerror(errno)
-				);
-			return (EXIT_FAILURE);
-		}
-	}
-	else {
-		return (EXIT_SUCCESS);
-	}
-	return (EXIT_SUCCESS);
-}
+#endif

@@ -30,9 +30,11 @@ SRCS		:= ${SRCS:S/^/${SRCS_DIR}/g}
 
 OBJS		:= ${SRCS:=.o}
 
+INCS		:= ${SRCS:.c=.h}
+
 NAME		:= bsdsetsid
 
-CFLAGS		+= -std=c89
+CFLAGS		 = -std=c89
 CFLAGS		+= -Wall
 CFLAGS		+= -Wextra
 CFLAGS		+= -Werror
@@ -44,7 +46,7 @@ MKDIR		:= mkdir -p
 
 .OBJDIR: ./
 .SUFFIXES: .c.o .c
-.c.c.o:
+.c.c.o: ${INCS}
 	${CC} -c ${CFLAGS} -o ${.TARGET:S/src/obj/} ${.IMPSRC}
 
 ${OBJS_DIR}:
