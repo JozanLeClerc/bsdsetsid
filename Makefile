@@ -19,13 +19,6 @@
 default: all
 
 SRCS_DIR	:= src/
-
-
-
-============================================
-THIS IS ON TRUNK
-============================================
-
 OBJS_DIR	:= obj/
 PREFIX		?= /usr/local/
 DESTDIR		:=
