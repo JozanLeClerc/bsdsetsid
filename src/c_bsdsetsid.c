@@ -39,7 +39,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * bsdsetsid: src/c_bsdsetsid.c
- * Wed Nov 25 23:06:05 CET 2020
+ * Thu Nov 26 22:12:37 CET 2020
  * Joe
  *
  * This is the entrypoint of the program.
@@ -52,15 +52,14 @@
 #include <unistd.h>
 
 #include "c_bsdsetsid.h"
+#include "c_fork.h"
 
 static char
 c_args
 (int			argc,
  const char*	argv[],
- const char*	envp[],
  bool_t*		wopt)
 {
-	(void)envp;
 	if (argc == 1) {
 		dprintf(
 			STDERR_FILENO,
@@ -91,53 +90,12 @@ main
  const char*	argv[],
  const char*	envp[])
 {
-	int sets_ret;
-	int exec_ret;
-	pid_t pid;
 	bool_t wopt;
 
 	wopt = FALSE;
-	if (c_args(argc, argv, envp, &wopt) != 0) {
+	if (c_args(argc, argv, &wopt) != 0) {
 		return (EXIT_FAILURE);
 	}
-	pid = fork();
-	if (pid == -1) {
-		dprintf(
-			STDERR_FILENO,
-			"%s: fork: %s\n",
-			C_PROGNAME,
-			strerror(errno)
-			);
-		return (EXIT_FAILURE);
-	}
-	else if (pid == 0) {
-		sets_ret = setsid();
-		if (sets_ret == -1) {
-			dprintf(
-				STDERR_FILENO,
-				"%s: setsid: %s\n",
-				C_PROGNAME,
-				strerror(errno)
-				);
-			return (EXIT_FAILURE);
-		}
-		exec_ret = execve(
-			argv[1 + wopt],
-			(char* const*)argv + (1 + wopt),
-			(char* const*)envp
-			);
-		if (exec_ret == -1) {
-			dprintf(
-				STDERR_FILENO,
-				"%s: execve: %s\n",
-				C_PROGNAME,
-				strerror(errno)
-				);
-			return (EXIT_FAILURE);
-		}
-	}
-	else {
-		return (EXIT_SUCCESS);
-	}
+	c_fork(argv, envp, wopt);
 	return (EXIT_SUCCESS);
 }
