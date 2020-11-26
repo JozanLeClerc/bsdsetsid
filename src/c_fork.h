@@ -39,14 +39,21 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * bsdsetsid: src/c_fork.h
- * Thu Nov 26 22:09:56 CET 2020
+ * Thu Nov 26 23:39:54 CET 2020
  * Joe
  */
 
 #ifndef __C_FORK_H__
 #define __C_FORK_H__
 
+#include <sys/types.h>
+
 #include "c_bsdsetsid.h"
+
+union ret_u {
+	pid_t	pid;
+	int		ret;
+};
 
 void c_fork(const char*[], const char*[], bool_t);
 

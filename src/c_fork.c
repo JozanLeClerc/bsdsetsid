@@ -39,11 +39,16 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * bsdsetsid: src/c_fork.c
- * Thu Nov 26 22:12:40 CET 2020
+ * Thu Nov 26 23:40:15 CET 2020
  * Joe
  *
  * The program's main fork(2).
  */
+
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <sys/time.h>
+#include <sys/resource.h>
 
 #include <errno.h>
 #include <stdlib.h>
@@ -52,6 +57,76 @@
 #include <unistd.h>
 
 #include "c_bsdsetsid.h"
+#include "c_fork.h"
+
+static void
+c_fork_child
+(const char*	argv[],
+ const char*	envp[],
+ bool_t			wopt)
+{
+	union ret_u u;
+
+	u.pid = setsid();
+	if (u.pid == -1) {
+		dprintf(
+			STDERR_FILENO,
+			"%s: setsid: %s\n",
+			C_PROGNAME,
+			strerror(errno)
+			);
+		exit(EXIT_FAILURE);
+	}
+	u.ret = execve(
+		argv[1 + wopt],
+		(char* const*)argv + (1 + wopt),
+		(char* const*)envp
+		);
+	if (u.ret == -1) {
+		dprintf(
+			STDERR_FILENO,
+			"%s: execve: %s\n",
+			C_PROGNAME,
+			strerror(errno)
+			);
+		exit(EXIT_FAILURE);
+	}
+}
+
+static void
+c_fork_parent
+(bool_t	wopt,
+ pid_t	pid)
+{
+	union ret_u u;
+	int status;
+
+	if (wopt == TRUE) {
+		u.pid = wait4(pid, &status, 0, NULL);
+		if (u.pid < 0) {
+			dprintf(
+				STDERR_FILENO,
+				"%s: wait4: %s\n",
+				C_PROGNAME,
+				strerror(errno)
+				);
+		}
+		exit(WEXITSTATUS(status));
+	}
+	exit(EXIT_SUCCESS);
+}
+
+static void
+c_fork_error(void)
+{
+	dprintf(
+		STDERR_FILENO,
+		"%s: fork: %s\n",
+		C_PROGNAME,
+		strerror(errno)
+		);
+	exit(EXIT_FAILURE);
+}
 
 void
 c_fork
@@ -59,47 +134,16 @@ c_fork
  const char*	envp[],
  bool_t			wopt)
 {
-	int sets_ret;
-	int exec_ret;
 	pid_t pid;
 
 	pid = fork();
 	if (pid == -1) {
-		dprintf(
-			STDERR_FILENO,
-			"%s: fork: %s\n",
-			C_PROGNAME,
-			strerror(errno)
-			);
-		exit(EXIT_FAILURE);
+		c_fork_error();
 	}
 	else if (pid == 0) {
-		sets_ret = setsid();
-		if (sets_ret == -1) {
-			dprintf(
-				STDERR_FILENO,
-				"%s: setsid: %s\n",
-				C_PROGNAME,
-				strerror(errno)
-				);
-			exit(EXIT_FAILURE);
-		}
-		exec_ret = execve(
-			argv[1 + wopt],
-			(char* const*)argv + (1 + wopt),
-			(char* const*)envp
-			);
-		if (exec_ret == -1) {
-			dprintf(
-				STDERR_FILENO,
-				"%s: execve: %s\n",
-				C_PROGNAME,
-				strerror(errno)
-				);
-			exit(EXIT_FAILURE);
-		}
+		c_fork_child(argv, envp, wopt);
 	}
 	else {
-		exit(EXIT_SUCCESS);
+		c_fork_parent(wopt, pid);
 	}
 }
