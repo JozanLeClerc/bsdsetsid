@@ -19,17 +19,18 @@
 default: all
 
 SRCS_DIR	:= src
-OBJS_DIR	:= obj
+# OBJS_DIR	:= obj
 PREFIX		?= /usr/local/
 DESTDIR		:=
 MAKEOBJDIR	:= ./
 
-SRCS		 = c_bsdsetsid
+SRCS		:= c_bsdsetsid
+SRCS		+= c_fork
 SRCS		:= ${SRCS:S/$/.c/g}
 SRCS		:= ${SRCS:S/^/${SRCS_DIR}\//g}
 
 OBJS		:= ${SRCS:=.o}
-OBJS		:= ${SRCS:S/${SRCS_DIR}/${OBJS_DIR}/g}
+# OBJS		:= ${OBJS:S/${SRCS_DIR}/${OBJS_DIR}/g}
 
 INCS		:= ${SRCS:.c=.h}
 
@@ -47,28 +48,24 @@ MKDIR		:= mkdir -p
 SED			:= sed -i ''
 
 .OBJDIR: ./
-.SUFFIXES: .c.o .c
-.c.c.o:
+.SUFFIXES: .c.o .o
+
+.c.c.o: ${INCS}
 	${CC} -c ${CFLAGS} -o ${.TARGET} ${.IMPSRC}
 
 ${NAME}: ${OBJS}
 	${CC} ${CFLAGS} -o ${.TARGET} ${.ALLSRC}
 
-${OBJS_DIR}:
-	${MKDIR} ${OBJS_DIR}
+# ${OBJS_DIR}:
+	# ${MKDIR} ${OBJS_DIR}
 
-.depend:
-	${CC} -I${SRCS_DIR} -E -MM ${SRCS} > .depend
-	${SED} 's/^/${OBJS_DIR}\//g' .depend
-	${SED} 's/\.o/\.c.o/g' .depend
-
-all: .depend ${OBJS_DIR} ${NAME}
+all: ${OBJS_DIR} ${NAME}
 
 clean:
-	${RM} ${OBJS} ${NAME} .depend vgcore*
-	${RM} -R obj
+	${RM} ${OBJS} ${NAME} vgcore*
+	# ${RM} -R ${OBJS_DIR}
 
-.PHONY: all clean .depend
+.PHONY: all clean depend
 
 # Files prefixes index
 # --------------------
