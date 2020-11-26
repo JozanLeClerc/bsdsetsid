@@ -18,51 +18,57 @@
 
 default: all
 
-SRCS_DIR	:= src/
-OBJS_DIR	:= obj/
+SRCS_DIR	:= src
+OBJS_DIR	:= obj
 PREFIX		?= /usr/local/
 DESTDIR		:=
 MAKEOBJDIR	:= ./
 
 SRCS		 = c_bsdsetsid
 SRCS		:= ${SRCS:S/$/.c/g}
-SRCS		:= ${SRCS:S/^/${SRCS_DIR}/g}
+SRCS		:= ${SRCS:S/^/${SRCS_DIR}\//g}
 
 OBJS		:= ${SRCS:=.o}
+OBJS		:= ${SRCS:S/${SRCS_DIR}/${OBJS_DIR}/g}
 
 INCS		:= ${SRCS:.c=.h}
 
 NAME		:= bsdsetsid
 
-CFLAGS		 = -std=c89
+CC			:= cc
+CFLAGS		:= -std=c89
 CFLAGS		+= -Wall
 CFLAGS		+= -Wextra
 CFLAGS		+= -Werror
 CFLAGS		+= -pedantic
 
 RM			:= rm -f
-RMDIR		:= rmdir -p
 MKDIR		:= mkdir -p
+SED			:= sed -i ''
 
 .OBJDIR: ./
 .SUFFIXES: .c.o .c
-.c.c.o: ${INCS}
-	${CC} -c ${CFLAGS} -o ${.TARGET:S/src/obj/} ${.IMPSRC}
+.c.c.o:
+	${CC} -c ${CFLAGS} -o ${.TARGET} ${.IMPSRC}
+
+${NAME}: ${OBJS}
+	${CC} ${CFLAGS} -o ${.TARGET} ${.ALLSRC}
 
 ${OBJS_DIR}:
 	${MKDIR} ${OBJS_DIR}
 
-${NAME}: ${OBJS}
-	${CC} ${CFLAGS} -o ${.TARGET} ${.ALLSRC:S/src/obj/}
+.depend:
+	${CC} -I${SRCS_DIR} -E -MM ${SRCS} > .depend
+	${SED} 's/^/${OBJS_DIR}\//g' .depend
+	${SED} 's/\.o/\.c.o/g' .depend
 
-all: ${OBJS_DIR} ${NAME}
+all: .depend ${OBJS_DIR} ${NAME}
 
 clean:
-	${RM} ${OBJS:S/src/obj/} ${NAME} vgcore*
+	${RM} ${OBJS} ${NAME} .depend vgcore*
 	${RM} -R obj
 
-.PHONY: all clean
-
+.PHONY: all clean .depend
 
 # Files prefixes index
 # --------------------
