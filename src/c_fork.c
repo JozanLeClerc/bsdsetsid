@@ -39,7 +39,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * bsdsetsid: src/c_fork.c
- * Thu Nov 26 23:40:15 CET 2020
+ * Fri Nov 27 01:48:00 CET 2020
  * Joe
  *
  * The program's main fork(2).
@@ -51,6 +51,7 @@
 #include <sys/resource.h>
 
 #include <errno.h>
+#include <limits.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -59,6 +60,55 @@
 #include "c_bsdsetsid.h"
 #include "c_fork.h"
 
+static char
+c_get_path
+(const char		arg[],
+ const char*	envp[],
+ ptr_t			path)
+{
+	char** env_path;
+	char tmp[PATH_MAX];
+	char* tmptr;
+	ptr_t tok;
+
+	if (strchr(arg, '/') != NULL) {
+		path = (ptr_t)arg;
+		return (0);
+	}
+	env_path = (char**)envp;
+	while (env_path != NULL && strncmp(*env_path, "PATH=", 5) != 0) {
+		env_path++;
+	}
+	if (env_path == NULL) {
+		path = NULL;
+		return (1);
+	}
+	strlcpy(tmp, *env_path, PATH_MAX);
+	tmptr = strchr(tmp, '=');
+	tmptr += 1;
+	if (*tmp == 0x00) {
+		path = NULL;
+		return (1);
+	}
+	tok = strtok(tmptr, ":");
+	if (tok == NULL) {
+		path = NULL;
+		return (1);
+	}
+	while (tok != NULL) {
+		sprintf(path, "%s/%s", tok, arg);
+		if (access(path, F_OK) != -1) {
+			break;
+		}
+		tok = strtok(NULL, ":");
+	}
+	if (tok == NULL) {
+		path = NULL;
+		return (2);
+	}
+	return (0);
+}
+
 static void
 c_fork_child
 (const char*	argv[],
@@ -66,6 +116,8 @@ c_fork_child
  bool_t			wopt)
 {
 	union ret_u u;
+	ptr_t path;
+	char mem[PATH_MAX];
 
 	u.pid = setsid();
 	if (u.pid == -1) {
@@ -77,16 +129,36 @@ c_fork_child
 			);
 		exit(EXIT_FAILURE);
 	}
+	path = mem;
+	u.ret = c_get_path(argv[1 + wopt], envp, path);
+	if (u.ret == 1) {
+		dprintf(
+			STDERR_FILENO,
+			"%s: PATH not set\n",
+			C_PROGNAME
+			);
+		exit(EXIT_FAILURE);
+	}
+	else if (u.ret == 2) {
+		dprintf(
+			STDERR_FILENO,
+			"%s: command not found: %s\n",
+			C_PROGNAME,
+			argv[1 + wopt]
+			);
+		exit(EXIT_FAILURE);
+	}
 	u.ret = execve(
-		argv[1 + wopt],
+		path,
 		(char* const*)argv + (1 + wopt),
 		(char* const*)envp
 		);
 	if (u.ret == -1) {
 		dprintf(
 			STDERR_FILENO,
-			"%s: execve: %s\n",
+			"%s: execve: %s: %s\n",
 			C_PROGNAME,
+			argv[1 + wopt],
 			strerror(errno)
 			);
 		exit(EXIT_FAILURE);

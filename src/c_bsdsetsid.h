@@ -39,7 +39,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * bsdsetsid: src/c_bsdsetsid.h
-Wed Nov 25 22:46:14 CET 2020
+ * Fri Nov 27 01:48:28 CET 2020
  * Joe
  *
  * This is the entrypoint of the program.
@@ -48,6 +48,7 @@ Wed Nov 25 22:46:14 CET 2020
 #define __C_BSDSETSID_H__
 
 typedef char bool_t;
+typedef void* ptr_t;
 
 enum bool_e {
 	FALSE,
