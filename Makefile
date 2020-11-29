@@ -11,7 +11,7 @@
 # ========================
 #
 # bsdsetsid: Makefile
-# Sun Nov 29 18:15:56 CET 2020
+# Sun Nov 29 18:27:43 CET 2020
 # Joe
 #
 # BSD Makefile
@@ -44,6 +44,7 @@ CFLAGS		+= -Wall
 CFLAGS		+= -Wextra
 CFLAGS		+= -Werror
 CFLAGS		+= -pedantic
+CFLAGS		+= -march=native -O2 -pipe
 
 RM			:= rm -f
 MKDIR		:= mkdir -p

@@ -39,7 +39,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * bsdsetsid: src/c_fork.c
- * Sun Nov 29 18:22:53 CET 2020
+ * Sun Nov 29 18:27:24 CET 2020
  * Joe
  *
  * The program's main fork(2).
@@ -126,7 +126,6 @@ c_fork_child
 	}
 	path = mem;
 	u.ret = c_get_path(argv[1 + wopt], envp, &path);
-	printf("%s\n", path);
 	if (u.ret == 1) {
 		dprintf(STDERR_FILENO, "%s: PATH not set\n", C_PROGNAME);
 		exit(EXIT_FAILURE);
