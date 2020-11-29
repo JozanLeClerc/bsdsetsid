@@ -1,0 +1,4 @@
+#+TITLE: bsdsetsid
+
+Simple implementation of util-linux *setsid* for FreeBSD. This was not tested
+on other BSD's or macOS but this might work just fine.
