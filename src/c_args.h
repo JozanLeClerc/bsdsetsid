@@ -38,23 +38,24 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
- * bsdsetsid: src/c_bsdsetsid.h
- * Sun Nov 29 17:02:13 CET 2020
+ * bsdsetsid: src/c_args.h
+ * Sun Nov 29 17:02:19 CET 2020
  * Joe
- *
- * This is the entrypoint of the program.
  */
-#ifndef __C_BSDSETSID_H__
-#define __C_BSDSETSID_H__
 
-#define C_PROGNAME "bsdsetsid"
+#ifndef __C_ARGS_H__
+#define __C_ARGS_H__
 
-typedef char bool_t;
-typedef void* ptr_t;
+#include "c_bsdsetsid.h"
 
-enum bool_e {
-	FALSE,
-	TRUE
-};
+#define C_USAGE_FMT "usage: bsdsetsid [-hw] utility [arguments]"
+#define C_HELP_FMT \
+	"usage: bsdsetsid [-hw] utility [arguments]\n\n"\
+	"options: -h\tdisplay this help\n"\
+	"         -w\twait program to exit, and use the same return"
+#define C_H_OPT "-h"
+#define C_W_OPT "-w"
 
-#endif /* ifndef __C_BSDSETSID_H__ */
+void	c_args(int, const char*[], bool_t*);
+
+#endif /* ifndef __C_ARGS_H__ */

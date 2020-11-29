@@ -39,7 +39,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * bsdsetsid: src/c_fork.c
- * Fri Nov 27 01:48:00 CET 2020
+ * Sun Nov 29 15:26:58 CET 2020
  * Joe
  *
  * The program's main fork(2).
@@ -121,22 +121,13 @@ c_fork_child
 
 	u.pid = setsid();
 	if (u.pid == -1) {
-		dprintf(
-			STDERR_FILENO,
-			"%s: setsid: %s\n",
-			C_PROGNAME,
-			strerror(errno)
-			);
+		dprintf(STDERR_FILENO, "%s: setsid: %s\n", C_PROGNAME, strerror(errno));
 		exit(EXIT_FAILURE);
 	}
 	path = mem;
 	u.ret = c_get_path(argv[1 + wopt], envp, path);
 	if (u.ret == 1) {
-		dprintf(
-			STDERR_FILENO,
-			"%s: PATH not set\n",
-			C_PROGNAME
-			);
+		dprintf(STDERR_FILENO, "%s: PATH not set\n", C_PROGNAME);
 		exit(EXIT_FAILURE);
 	}
 	else if (u.ret == 2) {
@@ -191,12 +182,7 @@ c_fork_parent
 static void
 c_fork_error(void)
 {
-	dprintf(
-		STDERR_FILENO,
-		"%s: fork: %s\n",
-		C_PROGNAME,
-		strerror(errno)
-		);
+	dprintf(STDERR_FILENO, "%s: fork: %s\n", C_PROGNAME, strerror(errno));
 	exit(EXIT_FAILURE);
 }
 

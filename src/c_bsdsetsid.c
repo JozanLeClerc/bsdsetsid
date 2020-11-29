@@ -39,7 +39,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * bsdsetsid: src/c_bsdsetsid.c
- * Thu Nov 26 22:12:37 CET 2020
+ * Sun Nov 29 16:42:26 CET 2020
  * Joe
  *
  * This is the entrypoint of the program.
@@ -51,38 +51,9 @@
 #include <string.h>
 #include <unistd.h>
 
+#include "c_args.h"
 #include "c_bsdsetsid.h"
 #include "c_fork.h"
-
-static char
-c_args
-(int			argc,
- const char*	argv[],
- bool_t*		wopt)
-{
-	if (argc == 1) {
-		dprintf(
-			STDERR_FILENO,
-			"%s: %s\n",
-			C_PROGNAME,
-			C_ERR_NOARG
-			);
-		return (1);
-	}
-	if (strncmp(argv[1], C_W_OPT, 3) == 0) {
-		*wopt = TRUE;
-		if (argc == 2) {
-			dprintf(
-				STDERR_FILENO,
-				"%s: %s\n",
-				C_PROGNAME,
-				C_ERR_NOARG
-				);
-			return (1);
-		}
-	}
-	return (0);
-}
 
 int
 main
@@ -93,9 +64,7 @@ main
 	bool_t wopt;
 
 	wopt = FALSE;
-	if (c_args(argc, argv, &wopt) != 0) {
-		return (EXIT_FAILURE);
-	}
+	c_args(argc, argv, &wopt);
 	c_fork(argv, envp, wopt);
 	return (EXIT_SUCCESS);
 }

@@ -11,7 +11,7 @@
 # ========================
 #
 # bsdsetsid: Makefile
-# Thu Nov 26 22:01:36 CET 2020
+# Sun Nov 29 18:15:56 CET 2020
 # Joe
 #
 # BSD Makefile
@@ -19,13 +19,15 @@
 default: all
 
 SRCS_DIR	:= src
+MAN_DIR		:= man
 # OBJS_DIR	:= obj
-PREFIX		?= /usr/local/
+PREFIX		?= /usr/local
 DESTDIR		:=
 MAKEOBJDIR	:= ./
 
 SRCS		:= c_bsdsetsid
 SRCS		+= c_fork
+SRCS		+= c_args
 SRCS		:= ${SRCS:S/$/.c/g}
 SRCS		:= ${SRCS:S/^/${SRCS_DIR}\//g}
 
@@ -36,7 +38,7 @@ INCS		:= ${SRCS:.c=.h}
 
 NAME		:= bsdsetsid
 
-CC			:= cc
+CC			?= cc
 CFLAGS		:= -std=c89
 CFLAGS		+= -Wall
 CFLAGS		+= -Wextra
@@ -46,6 +48,9 @@ CFLAGS		+= -pedantic
 RM			:= rm -f
 MKDIR		:= mkdir -p
 SED			:= sed -i ''
+GZIP		:= gzip
+GUNZIP		:= gunzip
+INSTALL		:= install
 
 .OBJDIR: ./
 .SUFFIXES: .c.o .o
@@ -65,7 +70,19 @@ clean:
 	${RM} ${OBJS} ${NAME} vgcore*
 	# ${RM} -R ${OBJS_DIR}
 
-.PHONY: all clean depend
+install: ${NAME}
+	${GZIP} ${MAN_DIR}/${NAME}.1
+	${MKDIR} ${PREFIX}/man/man1
+	${INSTALL} -m0444 ${MAN_DIR}/${NAME}.1.gz ${PREFIX}/man/man1/${NAME}.1.gz
+	${GUNZIP} ${MAN_DIR}/${NAME}.1.gz
+	${MKDIR} ${PREFIX}/bin
+	${INSTALL} -m0555 ${NAME} ${PREFIX}/bin/${NAME}
+
+uninstall:
+	${RM} ${PREFIX}/man/man1/${NAME}.1.gz
+	${RM} ${PREFIX}/bin/${NAME}
+
+.PHONY: all clean install
 
 # Files prefixes index
 # --------------------

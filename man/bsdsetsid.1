@@ -1,0 +1,123 @@
+.\" ========================
+.\" =====    ===============
+.\" ======  ================
+.\" ======  ================
+.\" ======  ====   ====   ==
+.\" ======  ===     ==  =  =
+.\" ======  ===  =  ==     =
+.\" =  ===  ===  =  ==  ====
+.\" =  ===  ===  =  ==  =  =
+.\" ==     =====   ====   ==
+.\" ========================
+.\"
+.\" SPDX-License-Identifier: BSD-3-Clause
+.\"
+.\" Copyright (c) 2020 Joe
+.\" All rights reserved.
+.\"
+.\" Redistribution and use in source and binary forms, with or without
+.\" modification, are permitted provided that the following conditions are met:
+.\" 1. Redistributions of source code must retain the above copyright
+.\"    notice, this list of conditions and the following disclaimer.
+.\" 2. Redistributions in binary form must reproduce the above copyright
+.\"    notice, this list of conditions and the following disclaimer in the
+.\"    documentation and/or other materials provided with the distribution.
+.\" 3. Neither the name of the organization nor the
+.\"    names of its contributors may be used to endorse or promote products
+.\"    derived from this software without specific prior written permission.
+.\"
+.\" THIS SOFTWARE IS PROVIDED BY JOE ''AS IS'' AND ANY
+.\" EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+.\" WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+.\" DISCLAIMED. IN NO EVENT SHALL JOE BE LIABLE FOR ANY
+.\" DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+.\" (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+.\" LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+.\" ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+.\" (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
+.\" THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+.\"
+.\" bsdsetsid: man/bsdsetsid.1
+.\" Sun Nov 29 18:09:44 CET 2020
+.\" Joe
+.\"
+.\" Manpage for bsdsetsid.
+.\" Contact rbousset@42lyon.fr to correct errors and typos.
+.de Text
+.nop \)\\$*
+..
+.de squoted_text
+.Text \\$3\(oq\fB\\$1\f[]\(cq\\$2
+..
+.de dquoted_text
+.Text \\$3\(lq\fB\\$1\f[]\(rq\\$2
+..
+.de file_example
+.PP
+.RS
+\`\\$1\' \-\> \`\\$2\'
+.RE
+.PP
+..
+.
+.
+.TH bsdsetsid 1 "29 November 2020" "bsdsetsid 1.0"
+.
+.
+.SH NAME
+.B bsdsetsid
+.
+.
+.SH SYNOPSIS
+.SY bsdsetsid
+.RB [ \-hw ]
+.I utility
+.RI [ arguments ]
+.YS
+.
+.
+.SH DESCRIPTION
+.PP
+The
+.B bsdsetsid
+utility invokes
+.I utility
+whith its
+.I arguments
+detached from its running shell. Unlike the util-linux
+.BR setsid ,
+.B bsdsetsid
+always calls
+.IR fork (2)
+to run the new process.
+.
+.
+.SH OPTIONS
+.TP
+.B \-h
+Output a brief help message.
+.TP
+.B \-w
+Wait  for  the execution of the program to end, and return the exit status of
+this program as the exit status of
+.BR bsdsetsid .
+.
+.
+.SH ENVIRONMENT
+.TP
+PATH
+Used to locate the requested
+.I utility
+if the name contains no \(oq/\(cq characters.
+.
+.
+.SH AUTHORS
+Joe <rbousset@42lyon.fr>
+.
+.
+.SH SEE ALSO
+.IR sh (1),
+.IR setsid (2),
+.IR fork (2),
+.IR wait4 (2),
+.IR execve (2)

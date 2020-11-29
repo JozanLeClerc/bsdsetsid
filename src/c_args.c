@@ -38,23 +38,43 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
- * bsdsetsid: src/c_bsdsetsid.h
- * Sun Nov 29 17:02:13 CET 2020
+ * bsdsetsid: src/c_args.c
+ * Sun Nov 29 16:43:56 CET 2020
  * Joe
  *
- * This is the entrypoint of the program.
+ * Arguments handling here.
  */
-#ifndef __C_BSDSETSID_H__
-#define __C_BSDSETSID_H__
 
-#define C_PROGNAME "bsdsetsid"
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
 
-typedef char bool_t;
-typedef void* ptr_t;
+#include "c_args.h"
+#include "c_bsdsetsid.h"
 
-enum bool_e {
-	FALSE,
-	TRUE
-};
-
-#endif /* ifndef __C_BSDSETSID_H__ */
+void
+c_args
+(int			argc,
+ const char*	argv[],
+ bool_t*		wopt)
+{
+	if (argc == 1) {
+		dprintf(STDERR_FILENO, "%s\n", C_USAGE_FMT);
+		exit(EXIT_FAILURE);
+	}
+	if (strncmp(argv[1], C_W_OPT, 3) == 0) {
+		*wopt = TRUE;
+		if (argc == 2) {
+			dprintf(STDERR_FILENO, "%s\n", C_USAGE_FMT);
+			exit(EXIT_FAILURE);
+		}
+	}
+	if (strncmp(argv[1], C_H_OPT, 3) == 0) {
+		*wopt = TRUE;
+		if (argc == 2) {
+			dprintf(STDERR_FILENO, "%s\n", C_HELP_FMT);
+			exit(EXIT_SUCCESS);
+		}
+	}
+}
