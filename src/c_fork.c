@@ -39,7 +39,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * bsdsetsid: src/c_fork.c
- * Sun Nov 29 15:26:58 CET 2020
+ * Sun Nov 29 18:22:53 CET 2020
  * Joe
  *
  * The program's main fork(2).
@@ -64,7 +64,7 @@ static char
 c_get_path
 (const char		arg[],
  const char*	envp[],
- ptr_t			path)
+ ptr_t*			path)
 {
 	char** env_path;
 	char tmp[PATH_MAX];
@@ -72,7 +72,7 @@ c_get_path
 	ptr_t tok;
 
 	if (strchr(arg, '/') != NULL) {
-		path = (ptr_t)arg;
+		*path = (ptr_t)arg;
 		return (0);
 	}
 	env_path = (char**)envp;
@@ -80,30 +80,30 @@ c_get_path
 		env_path++;
 	}
 	if (env_path == NULL) {
-		path = NULL;
+		*path = NULL;
 		return (1);
 	}
 	strlcpy(tmp, *env_path, PATH_MAX);
 	tmptr = strchr(tmp, '=');
 	tmptr += 1;
 	if (*tmp == 0x00) {
-		path = NULL;
+		*path = NULL;
 		return (1);
 	}
 	tok = strtok(tmptr, ":");
 	if (tok == NULL) {
-		path = NULL;
+		*path = NULL;
 		return (1);
 	}
 	while (tok != NULL) {
-		sprintf(path, "%s/%s", tok, arg);
-		if (access(path, F_OK) != -1) {
+		sprintf(*path, "%s/%s", tok, arg);
+		if (access(*path, F_OK) != -1) {
 			break;
 		}
 		tok = strtok(NULL, ":");
 	}
 	if (tok == NULL) {
-		path = NULL;
+		*path = NULL;
 		return (2);
 	}
 	return (0);
@@ -125,7 +125,8 @@ c_fork_child
 		exit(EXIT_FAILURE);
 	}
 	path = mem;
-	u.ret = c_get_path(argv[1 + wopt], envp, path);
+	u.ret = c_get_path(argv[1 + wopt], envp, &path);
+	printf("%s\n", path);
 	if (u.ret == 1) {
 		dprintf(STDERR_FILENO, "%s: PATH not set\n", C_PROGNAME);
 		exit(EXIT_FAILURE);
