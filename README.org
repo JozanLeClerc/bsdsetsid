@@ -1,4 +1,49 @@
 #+TITLE: bsdsetsid
 
 Simple implementation of util-linux *setsid* for FreeBSD. This was not tested
-on other BSD's or macOS but this might work just fine.
+on other BSD's or macOS but this probably works just fine.
+
+* Dependencies
+- A C compiler
+- BSD Make
+
+* Installation
+You can get *bsdsetsid* either through ~git~ or ~fossil~.
+
+For ~fossil~ use:
+#+BEGIN_SRC shell
+mkdir bsdsetsid
+cd bsdsetsid
+fossil clone \
+  https://chiselapp.com/user/JozanLeClerc/repository/bsdsetsid \
+  bsdsetsid.fossil
+fossil open --force bsdsetsid.fossil
+#+END_SRC
+or for ~git~:
+#+BEGIN_SRC shell
+git clone git://jozanleclerc.xyz/jozan/bsdsetsid.git
+cd bsdsetsid
+#+END_SRC
+Then build and install the program:
+#+BEGIN_SRC shell
+make
+sudo make install clean
+#+END_SRC
+Note that if you are one macOS, you need to install and use BSD Make instead
+of GNU Make.
+
+* Usage
+Example of usage:
+#+BEGIN_SRC shell
+bsdsetsid st -e sh -c 'cowsay hello; zsh -i'
+exit
+#+END_SRC
+Replace ~st~ and other arguments with any program you'd like to run detached
+from the current shell.
+
+For more informations, run:
+#+BEGIN_SRC shell
+man bsdsetsid
+#+END_SRC
+
+Thanks for checking *bsdsetsid*.
