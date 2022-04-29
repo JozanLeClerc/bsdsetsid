@@ -96,7 +96,7 @@ c_get_path
 		return (1);
 	}
 	while (tok != NULL) {
-		sprintf(*path, "%s/%s", tok, arg);
+		sprintf(*path, "%s/%s", (char*)tok, arg);
 		if (access(*path, F_OK) != -1) {
 			break;
 		}
