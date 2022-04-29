@@ -22,7 +22,7 @@ For fossil use:
   $ fossil open --force bsdsetsid.fossil
 
 or for git:
-  $ git clone git://jozanleclerc.xyz/jozan/bsdsetsid.git
+  $ git clone git://gitjoe.xyz/jozan/bsdsetsid.git
   $ cd bsdsetsid
 
 Then build and install the program:

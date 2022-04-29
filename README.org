@@ -21,7 +21,7 @@ fossil open --force bsdsetsid.fossil
 #+END_SRC
 or for ~git~:
 #+BEGIN_SRC shell
-git clone git://jozanleclerc.xyz/jozan/bsdsetsid.git
+git clone git://gitjoe.xyz/jozan/bsdsetsid.git
 cd bsdsetsid
 #+END_SRC
 Then build and install the program:

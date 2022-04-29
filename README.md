@@ -28,14 +28,16 @@ For `fossil` use:
 ```sh
 mkdir bsdsetsid
 cd bsdsetsid
-fossil clone https://chiselapp.com/user/JozanLeClerc/repository/bsdsetsid bsdsetsid.fossil
+fossil clone \
+	https://chiselapp.com/user/JozanLeClerc/repository/bsdsetsid \
+	bsdsetsid.fossil
 fossil open --force bsdsetsid.fossil
 ```
 
 or for `git`:
 
 ```sh
-git clone git://jozanleclerc.xyz/jozan/bsdsetsid.git
+git clone git://gitjoe.xyz/jozan/bsdsetsid.git
 cd bsdsetsid
 ```
 
